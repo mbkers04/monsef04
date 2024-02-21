@@ -1,142 +1,137 @@
-const body = document.querySelector("body");
-const header = document.querySelector(".header");
-const nav = document.querySelector(".nav");
-const navList = document.querySelector(".nav_list");
-const links = document.querySelectorAll(".links");
-const logo = document.querySelector(".logo");
-const navIcon = document.querySelector(".nav_icon");
-const overlay = document.querySelector(".overlay");
-const switchmode = document.querySelector(".switchmode");
-const switchIcon = document.querySelector(".switchmode i");
-const topIcon = document.querySelector(".top_icon");
-const section1 = document.querySelector(".hero_section");
-const imgsChanged = document.querySelectorAll(".changed");
-const projects = document.querySelectorAll(".project");
-const moreProjects = document.querySelector(".more");
-const projectsHidden = document.querySelectorAll(".project_hidden");
-const standBtns = document.querySelectorAll(".standart");
-const showElements = document.querySelectorAll(".show_el");
-const mediaQuery = window.matchMedia("(max-width: 62rem)");
+const wrapper = document.querySelector(".sliderWrapper");
+const menuItems = document.querySelectorAll(".menuItem");
 
-// Wait promise
-const wait = function(seconds) {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, seconds * 1000);
+const products = [
+  {
+    id: 1,
+    title: "Air Force",
+    price: 119,
+    colors: [
+      {
+        code: "black",
+        img: "../assets/Images/sneaker-images/air.png",
+      },
+      {
+        code: "darkblue",
+        img: "../assets/Images/sneaker-images/air2.png",
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "Air Jordan",
+    price: 149,
+    colors: [
+      {
+        code: "lightgray",
+        img: "../assets/Images/sneaker-images/jordan.png",
+      },
+      {
+        code: "green",
+        img: "../assets/Images/sneaker-images/jordan2.png",
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "Blazer",
+    price: 109,
+    colors: [
+      {
+        code: "lightgray",
+        img: "../assets/Images/sneaker-images/blazer.png",
+      },
+      {
+        code: "green",
+        img: "../assets/Images/sneaker-images/blazer2.png",
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: "Crater",
+    price: 129,
+    colors: [
+      {
+        code: "black",
+        img: "../assets/Images/sneaker-images/crater.png",
+      },
+      {
+        code: "lightgray",
+        img: "../assets/Images/sneaker-images/crater2.png",
+      },
+    ],
+  },
+  {
+    id: 5,
+    title: "Hippie",
+    price: 99,
+    colors: [
+      {
+        code: "gray",
+        img: "../assets/Images/sneaker-images/hippie.png",
+      },
+      {
+        code: "black",
+        img: "../assets/Images/sneaker-images/hippie2.png",
+      },
+    ],
+  },
+];
+
+let choosenProduct = products[0];
+
+const currentProductImg = document.querySelector(".productImg");
+const currentProductTitle = document.querySelector(".productTitle");
+const currentProductPrice = document.querySelector(".productPrice");
+const currentProductColors = document.querySelectorAll(".color");
+const currentProductSizes = document.querySelectorAll(".size");
+
+menuItems.forEach((item, index) => {
+  item.addEventListener("click", () => {
+    //change the current slide
+    wrapper.style.transform = `translateX(${-100 * index}vw)`;
+
+    //change the choosen product
+    choosenProduct = products[index];
+
+    //change texts of currentProduct
+    currentProductTitle.textContent = choosenProduct.title;
+    currentProductPrice.textContent = "$" + choosenProduct.price;
+    currentProductImg.src = choosenProduct.colors[0].img;
+
+    //assing new colors
+    currentProductColors.forEach((color, index) => {
+      color.style.backgroundColor = choosenProduct.colors[index].code;
     });
-};
-
-// nav icon's click event
-
-const showNavList = function() {
-    overlay.classList.toggle("hidden");
-    wait(0.05).then(() => overlay.classList.toggle("overlay--active"));
-    navIcon.classList.toggle("nav_icon--active");
-    navList.classList.toggle("nav_list--active");
-};
-
-navIcon.addEventListener("click", showNavList);
-overlay.addEventListener("click", showNavList);
-
-navList.addEventListener("click", function(e) {
-    const clicked = e.target.closest(".link");
-    if (clicked && navList.classList.contains("nav_list--active")) {
-        wait(0.5).then(() => {
-            overlay.classList.add("hidden");
-            overlay.classList.remove("overlay--active");
-            navIcon.classList.remove("nav_icon--active");
-            navList.classList.remove("nav_list--active");
-        });
-    }
-});
-// change opacity of the anchors
-const handleHover = function(e) {
-    const link = e.target.closest(".link");
-    if (link) {
-        const siblings = link.closest(".links").querySelectorAll(".link");
-        siblings.forEach((l) => {
-            if (l !== link) {
-                l.style.opacity = this;
-            }
-        });
-    }
-};
-links.forEach((link) => {
-    link.addEventListener("mouseover", handleHover.bind(0.5));
-    link.addEventListener("mouseout", handleHover.bind(1));
+  });
 });
 
-// Dark mode
+currentProductColors.forEach((color, index) => {
+  color.addEventListener("click", () => {
+    currentProductImg.src = choosenProduct.colors[index].img;
+  });
+});
 
-switchmode.addEventListener("click", function() {
-    switchIcon.classList.toggle("fa-sun");
-    switchIcon.classList.toggle("fa-moon");
-    body.classList.toggle("dark_mode");
-    imgsChanged.forEach((img) => {
-        img.src = `./media/${img.alt}${
-      switchIcon.classList.contains("fa-moon") ? 1 : 2
-    }.png`;
+currentProductSizes.forEach((size, index) => {
+  size.addEventListener("click", () => {
+    currentProductSizes.forEach((size) => {
+      size.style.backgroundColor = "white";
+      size.style.color = "black";
     });
-});
-/* document.documentElement.style.setProperty("--main-color", "red"); */
-
-// Back to top of the page
-const goTop = function(entries) {
-    const [entry] = entries;
-    if (!entry.isIntersecting) {
-        topIcon.classList.remove("hidden");
-    } else topIcon.classList.add("hidden");
-};
-const topObserver = new IntersectionObserver(goTop, {
-    root: null,
-    threshold: 0,
-});
-topObserver.observe(section1);
-
-// Scroll to top
-topIcon.addEventListener("click", function(e) {
-    header.scrollIntoView({
-        behavior: "smooth"
-    });
+    size.style.backgroundColor = "black";
+    size.style.color = "white";
+  });
 });
 
-// Show hidden projects
-moreProjects.addEventListener("click", function(e) {
-    e.preventDefault();
-    moreProjects.style.display = "none";
-    projectsHidden.forEach((pr) => pr.classList.remove("project_hidden"));
+const productButton = document.querySelector(".productButton");
+const payment = document.querySelector(".payment");
+const close = document.querySelector(".close");
+
+productButton.addEventListener("click", () => {
+  payment.style.display = "flex";
 });
-file: ///home/othmane/Desktop/menu
 
-
-    // Place rojects button
-    if (mediaQuery.matches) {
-        standBtns.forEach((btn) => btn.classList.add("project_hidden"));
-        projects.forEach((p, i) => {
-            let projecdomain;
-            if (projects[i].querySelector("img").alt == "bugbeat")
-                projecdomain = ".tech";
-            else if (projects[i].querySelector("img").alt == "2baconcours" || projects[i].querySelector("img").alt == "bsecure-club")
-                projecdomain = ".com";
-            else projecdomain = ".netlify.app";
-            p.insertAdjacentHTML(
-                "beforeend",
-                `<a class="btn sec_btn standart" target="_blank" href="https://${
-        projects[i].querySelector("img").alt
-      }${projecdomain}">See project</a
->`
-            );
-        });
-    }
-// Sections animation
-window.addEventListener("scroll", function() {
-    showElements.forEach((element, index) => {
-        const elementPosition = element.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
-
-        if (elementPosition < windowHeight) {
-            if (element.classList.contains("show_el--left")) {
-                element.classList.add("animate__fadeInLeft");
-            } else element.classList.add("animate__fadeInTop");
-        }
-    });
+close.addEventListener("click", () => {
+  payment.style.display = "none";
 });
